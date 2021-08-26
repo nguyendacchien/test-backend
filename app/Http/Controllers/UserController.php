@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api',['except'=>['login','register']]);
+        $this->middleware('auth:api',['except'=>['login','register','getAll']]);
     }
 
     public function login(Request $request)
@@ -24,7 +25,7 @@ class UserController extends Controller
         }
 
         if (! $token = auth()->attempt($validator->validated())){
-            return response()->json(['error'=>'Unauthorized'],401);
+            return response()->json(['error'=>'mật khẩu không chính xác']);
         }
         return $this->createNewToken($token);
     }
@@ -72,5 +73,10 @@ class UserController extends Controller
             'expires_in'=>auth()->factory()->getTTL()*60,
             'user'=>auth()->user()
         ]);
+    }
+
+    public function getAll()
+    {
+        return response()->json(User::all());
     }
 }

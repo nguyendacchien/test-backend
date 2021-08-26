@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,11 +16,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('user',[\App\Http\Controllers\AuthController::class,'getAll'])->name('user.all');
+Route::post('/login',[UserController::class,'login']);
+Route::post('/register',[UserController::class,'register']);
 Route::group(['middleware'=>'api','prefix'=>'user'],function (){
-    Route::post('/login',[UserController::class,'login']);
-    Route::post('/register',[UserController::class,'register']);
     Route::post('/logout',[UserController::class,'logout']);
     Route::post('/refresh',[UserController::class,'refresh']);
     Route::get('/user-profile',[UserController::class,'userProfile']);
+    Route::prefix('auth')->group(function (){
+        Route::get('/',[AuthController::class,'getAll']);
+        Route::get('/{id}',[AuthController::class,'getById']);
+    });
 });
+
+
+
